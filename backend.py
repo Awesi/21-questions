@@ -17,10 +17,10 @@ def main(prompt, history):
         array_count = 1
         for word in array:
             if array_count == 1:
-                user_history += (word + ' | ')
+                user_history += (word + ' , ')
                 array_count += 1
             else:
-                chat_history += (word + ' | ')
+                chat_history += (word + ' , ')
 
     response = ollama.generate(model='mistral', prompt=
         
@@ -39,24 +39,14 @@ def main(prompt, history):
     if count == 0:
         word = response['response']
 
-    initial_prompt = f'''
-    Conversation history so far {chat_history}
-    YOU, the chatbot are a gamemaster for the game hangman.
-    Your word is {word}.
-    Keep it a secret displaying a number of adjacent asterixes equal to the number of letters in the word.
-    so if there were 5 letter in {word}, then do *****, and if the were 6 letter in {word}, then do ******
-    This will be known as the hidden word
-    The user has a number of lives starting at 5.
-    Check the user history here: {user_history}. to determine the current amount of lives.
-    For each unique letter in the user history that is not in the word, subtract one from the amount of lives.
-    When the amount of lives equals 0, the game is over and the user has lost. 
-    Prompt the user to restart the program to play again
-    The user will either enter letters individually or will guess the word straight up
-    When a letter is entered (or if it is a letter in {user_history}), if the letter is in {word}.
-    Display in the hidden word where those letter would be as if they where in the {word} itself.
-    e.g. if the word was carrot and the user history was ' a | c | ' then the current output would be ca****
-    If the user guesses a word, if this word = {word}, they have won the game, otherwise, subtract a life
+    print(word)
+    print(user_history)
 
+    initial_prompt = f'''
+    KEEP THIS WORD HIDDEN AND DO NOT MENTION IT WHATSOEVER: {word}.
+    When a user guesses from one of 26 letters, only now reveal information about that ONE letter in relation to the word
+    Reveal the follow letters if they are in the word: {user_history}, {prompt}
+    You are playing against the person guessing letters and you are not to help them in anyway or participate.
     '''
     
 
@@ -79,7 +69,7 @@ def main(prompt, history):
 
     
     count += 1
-    return (game['message']['content'])
+    return ("AI: \n" + game['message']['content'])
 
 if __name__ == '__main__':
     main()
