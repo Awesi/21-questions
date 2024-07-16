@@ -2,16 +2,18 @@ import boto3
 import json
 
 boto3.setup_default_session(profile_name='hangman-client')
-client = boto3.client('bedrock-runtime', region_name="")
+client = boto3.client('bedrock-runtime', region_name="eu-west-2")
 
 def main(prompt, message_history):
 
-    input_data = """{\"prompt\":\"\\n\\nHuman: You are playing a game of hangman, and you have picked
-    the word sunshine, use the history to determine and the current guess here: """ + prompt + """ to determine
-    which letters are revealed\\n\\nAssistant:\",
-    \"temperature\":0.5,
-    \"max_gen_len\":512,
-    \"top_p\":0.9}"""
+    data = {
+    "prompt": f"\n\nHuman: You are playing a game of hangman, and you have picked the word sunshine. Use the history (here: {message_history}) and the current guess here: {prompt} to determine which letters are revealed\n\nAssistant:",
+    "temperature": 0.5,
+    "max_gen_len": 512,
+    "top_p": 0.9
+    }
+
+    input_data = json.dumps(data)
 
     model_id = 'meta.llama3-70b-instruct-v1:0'
 
@@ -29,5 +31,5 @@ def main(prompt, message_history):
     
 
 if __name__ == '__main__':
-    output = main()
+    output = main('e', 5)
     print(output)
