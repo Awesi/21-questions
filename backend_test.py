@@ -3,6 +3,7 @@ import json
 
 
 count = 0
+word = ''
 
 boto3.setup_default_session(profile_name='hangman-client')
 client = boto3.client('bedrock-runtime', region_name="eu-west-2")
@@ -10,18 +11,12 @@ client = boto3.client('bedrock-runtime', region_name="eu-west-2")
 def main(prompt, message_history):
 
     global count
+    global word
     model_id = 'meta.llama3-70b-instruct-v1:0'
-
-    data = {
-    "prompt": f"\n\nHuman: You are playing a game of hangman, and you have picked the word sunshine. Don't give the python code, play as the gamemaster. Create a variable called hidden word made up of 8 '*'s. Use the history (here: {message_history}) and the current guess here: {prompt} as the letters and words guessed. Out of the letters guessed, reveal all instances on them in the hidden word at the correct index. e.g, if s was guessed and the word was sunshine, since it appears in the 0th and 3rd index in the word, fill out the 0th and 3rd index of hidden word with s\n\nAssistant:",
-    "temperature": 0.5,
-    "max_gen_len": 512,
-    "top_p": 0.9
-    }
 
     if count == 0:
         data2 = {
-        "prompt": f"\n\nHuman: Pick a random object that you are confident you know a lot about\n\nAssistant:",
+        "prompt": f"\n\nHuman: Pick a random object that you are confident you know a lot about. To do this, pick a random number from 1 to 10. If 1, pick an object; If 2, pick a food; If 3, pick an animal... . Return a one word answer that is just that word. DO NOT respond with more than a one word answer in quotation marks\n\nAssistant:",
         "temperature": 0.5,
         "max_gen_len": 512,
         "top_p": 0.9
@@ -37,7 +32,12 @@ def main(prompt, message_history):
 
     print(word)
 
-
+    data = {
+    "prompt": f"\n\nHuman: The user is playing a game of 21 questions with you. This has been the game so far {message_history}, use this to determine how many yes or no questions the user has asked, if it is 21, then they have lost and state this. the word the user is trying to guess is {word}. The user will ask you yes or no questions about the object which you must answer truthfully. The user is also allowed to guess the object. You MUST NOT reveal or say {word} unless the user makes an explicit guess about {word}. If this happens, congratulate the user as they have won. This is the user's first question " + prompt + " \n\nAssistant:",
+    "temperature": 0.5,
+    "max_gen_len": 512,
+    "top_p": 0.9
+    }
 
 
 
@@ -61,4 +61,6 @@ def main(prompt, message_history):
 
 if __name__ == '__main__':
     output = main('e', 5)
-    print(output)
+    output = main('s', 5)
+    
+    

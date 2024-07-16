@@ -1,6 +1,6 @@
 
 import gradio as gr
-from backend import main as chat_bot
+from backend_test import main as chat_bot
 
 css = """
 h1 {
