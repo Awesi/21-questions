@@ -25,14 +25,15 @@ mytheme = gr.themes.Soft(
     input_background_fill='*primary_100',
 )
 
+
 gr.ChatInterface(
     chat_bot,
     chatbot=gr.Chatbot(height=600),
     textbox=gr.Textbox(placeholder="Ask me a yes or no question", container=False, scale=7),
-    title="Chatbot",
-    description="Hangman game",
+    title="21 Questions",
+    description="Ask 21 yes or no questions or attempt to guess the word (enter: 'retry' to reset your run!)",
     theme=mytheme,
-    examples=["Hello", "What's up", "How was your weekend"],
+    examples=["Is it alive?", "Is it electronic?", "Is it edible?"],
     cache_examples=False,
     retry_btn=None,
     undo_btn="Delete Previous",
