@@ -4,7 +4,7 @@ from random import choice
 from objectlist import rand_word
 
 
-count = 0
+count = 1
 word = ''
 
 boto3.setup_default_session(profile_name='21-questions')
@@ -17,8 +17,18 @@ def main(prompt, message_history):
     model_id = 'meta.llama3-70b-instruct-v1:0'
 
     current_prompt = ''
-    gameprompt = f"The user is playing a game of 21 questions with you. This has been the game so far {message_history}. If this number {count} is 21, the user has lost, state this, you are current on the {count}th questions, so display this, return to 0 if retry is entered by the user. the word the user is trying to guess is {word}. The user will ask you yes or no questions about the object which you must answer truthfully. The user is also allowed to guess the object. You MUST NOT reveal or say {word} unless the user makes an explicit guess about {word}. If this happens, congratulate the user as they have won. This is the user's first question " + prompt, 
-    checkprompt = f"Look at this word: {word}, if you think it is an umbrella term, return True, otherwise, return false. ONLY RETURN A SINGLE WORD, EITHER TRUE OR FALSE. DO NOT RETURN MORE THAN ONE WORD"
+    gameprompt = f"""The user is playing a game of 21 questions with you. 
+                    This has been the game so far {message_history}.
+                    You are current on the {count + 1}th question (since they will move onto the 2nd question once you have responded to their initial prompt), so DISPLAY on each response that the user is on the {count + 1}th question, return to 0 if retry is entered by the user.
+                    the word the user is trying to guess is {word}.
+                    The user will ask you yes or no questions about the object which you must answer truthfully.
+                    Only deliver information about the question through a simple yes or no and nothing else. 
+                    The user is also allowed to guess the object. 
+                    You MUST NOT reveal or say {word} unless the user makes an explicit guess about {word}.
+                    When answering yes or no, include in your response what you interpreted by their question
+                    If this happens and the users makes a guess asking if it is {word}, do not just respond with yes but also congratulate the user as they have won.
+                    This is the user's first question """ + prompt, 
+    
 
     data = {
     "prompt": f"\n\nHuman: {current_prompt}\n\nAssistant:",
@@ -27,18 +37,17 @@ def main(prompt, message_history):
     "top_p": 0.9
     }
 
-    if count == 0:  
+    if count == 1:  
         word = rand_word()
 
     if prompt.lower() == 'retry':   
         count = 0
-        print(count)
-        word = rand_word()
+        print(count)    
+        
 
     if count == 22:
         count = 0
         holdword = word
-        word = rand_word()
         return (f'Unlucky, you did not get the word, the word was: {holdword}!')
     
     print(word)
@@ -64,6 +73,7 @@ def main(prompt, message_history):
     count += 1
 
     print(count)
+    print(output['generation'])
 
     if prompt.lower != 'retry':
         return (output['generation'])
