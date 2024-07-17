@@ -7,7 +7,7 @@ from objectlist import rand_word
 count = 0
 word = ''
 
-boto3.setup_default_session(profile_name='hangman-client')
+boto3.setup_default_session(profile_name='21-questions')
 client = boto3.client('bedrock-runtime', region_name="eu-west-2")
 
 def main(prompt, message_history):
