@@ -31,7 +31,7 @@ gr.ChatInterface(
     chatbot=gr.Chatbot(height=600),
     textbox=gr.Textbox(placeholder="Ask me a yes or no question", container=False, scale=7),
     title="21 Questions",
-    description="Ask 21 yes or no questions or attempt to guess the word (enter: 'retry' to reset your run!)",
+    description="Ask 21 yes or no questions or attempt to guess the word (enter: 'retry' to reset your run)",
     theme=mytheme,
     examples=["Is it alive?", "Is it electronic?", "Is it edible?"],
     cache_examples=False,
