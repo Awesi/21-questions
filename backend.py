@@ -1,5 +1,7 @@
 import ollama
-
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_community.llms import Ollama
 
 count = 0
 user_history = ''
@@ -13,42 +15,59 @@ def main(prompt, history):
     global user_history
     global chat_history
     
-    for array in history:
-        array_count = 1
-        for word in array:
-            if array_count == 1:
-                user_history += (word + ' , ')
-                array_count += 1
-            else:
-                chat_history += (word + ' , ')
+    # for array in history:
+    #     array_count = 1
+    #     for word in array:
+    #         if array_count == 1:
+    #             user_history = (word + ' , ')
+    #             array_count += 1
+    #         else:
+    #             chat_history = (word + ' , ')
 
-    response = ollama.generate(model='mistral', prompt=
+    llm = Ollama(model="mistral")
+
+    # response = ollama.generate(model='mistral', prompt=
         
-            '''You are a random word generator whos only purpose is to return a SINGLE WORD.
-            Be creative with your word choice, you can choose any one word in the english language.
-            It could be very complicated or very simple.
-            Do not choose the word SERENDIPITY.
-            Do not make up random words.
-            Do not try to think of complicated words for the sake of it e.g. 'Zephyr' or 'Whimsicality'
-            Do pick normal words that are used often e.g. Truck , Kitty , Transport
-            Pick simplicity over complexity
-            Perform this function returning one word in quotation marks'''
+    #         '''You are a random word generator whos only purpose is to return a SINGLE WORD.
+    #         Be creative with your word choice, you can choose any one word in the english language.
+    #         It could be very complicated or very simple.
+    #         Do not choose the word SERENDIPITY.
+    #         Do not make up random words.
+    #         Do not try to think of complicated words for the sake of it e.g. 'Zephyr' or 'Whimsicality'
+    #         Do pick normal words that are used often e.g. Truck , Kitty , Transport
+    #         Pick simplicity over complexity
+    #         Perform this function returning one word in quotation marks'''
         
+    # )
+
+    # if count == 0:
+    #     word = response['response']
+
+    # print(word)
+    # print(user_history)
+
+    # initial_prompt = f'''
+    # You are the hangman game master
+    # The word is: '{word}'
+    # The guesses for letters in the word are: '{user_history, prompt}'
+    # '''
+    
+    promt_template = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                f'''
+                You are the hangman game master
+                The word is: '{word}'
+                The guesses for letters in the word are: '{user_history, prompt}'
+                '''
+            ),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{input}"),
+        ]
     )
 
-    if count == 0:
-        word = response['response']
-
-    print(word)
-    print(user_history)
-
-    initial_prompt = f'''
-    KEEP THIS WORD HIDDEN AND DO NOT MENTION IT WHATSOEVER: {word}.
-    When a user guesses from one of 26 letters, only now reveal information about that ONE letter in relation to the word
-    Reveal the follow letters if they are in the word: {user_history}, {prompt}
-    You are playing against the person guessing letters and you are not to help them in anyway or participate.
-    '''
-    
+    chain = promt_template | llm
 
     # if count == 0:
     #     message_prompt = initial_prompt
@@ -60,16 +79,17 @@ def main(prompt, history):
     #     '''
 
 
-    game = ollama.chat(model='mistral', messages=[
-        {
-            'role': 'user',
-            'content': initial_prompt,
-        },
-    ])
+    # game = ollama.chat(model='mistral', messages=[
+    #     {
+    #         'role': 'user',
+    #         'content': initial_prompt,
+    #     },
+    # ])
 
+    response2 = chain.invoke({"input": prompt, "chat_history": history})
     
-    count += 1
-    return ("AI: \n" + game['message']['content'])
+    # count += 1
+    return ("AI: " + response2)
 
 if __name__ == '__main__':
     main()
