@@ -41,8 +41,15 @@ def main(prompt, message_history):
                     Tell them that they guessed the word in {count} questions and don't display which question they are on.
                     This is the user's first question: {prompt}""",
 
+    hint_prompt = f""" The user is playing a game of 21 questions with you. 
+            This has been the game so far {message_history}.
+            You are called upon as the game master to deliver a brief and vague hint about the object {word}.
+            You should only mention ONE thing about this object such as one of the following: where you would find it, a cryptic description of its purpose, its normal/usual colour  to suggest a few
+            The response should be 1 word and should only describe one thing about the object. This word MUST NOT BE IN {message_history}
+            The response should be vague. For examples, if the word was watch, model answer: 'item mostly worm for style', bad answer: 'keeps track of time passing'.
+            DO NOT MENTION {word} in any part of your response. """
 
-  
+    current_prompt = claude_gameprompt
         
 
     if count == 22:
@@ -56,6 +63,7 @@ def main(prompt, message_history):
     if prompt.lower() == 'retry':
         
         count = 1
+        otto = False
         return("SYSTEM RESTARTING GAME\n\nNEW WORD GENERATED: TRUE\n\n Please ask your 1st Question")
     
     elif prompt.lower() == 'otto':
@@ -64,10 +72,14 @@ def main(prompt, message_history):
 
     else:
 
+        if prompt.lower() == 'hint':
+            current_prompt = hint_prompt
+
+
         conversation = [
             {
                 "role": "user",
-                "content":[{"text": str(claude_gameprompt)}],
+                "content":[{"text": str(current_prompt)}],
             }
         ]
 
